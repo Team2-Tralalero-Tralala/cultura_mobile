@@ -1,3 +1,6 @@
+/**
+ * คำอธิบาย : Component สำหรับแสดงข้อมูลแพ็กเกจท่องเที่ยว (รูปภาพ, ชื่อ, สถานที่, สถานะการจอง, จำนวนคน, แท็ก และราคา)
+ */
 import 'package:flutter/material.dart';
 
 enum BookingStatus { OPEN, CLOSED, UPCOMING }
@@ -32,6 +35,11 @@ class PackageCard extends StatelessWidget {
     this.onClick,
   });
 
+  /*
+   * คำอธิบาย : ฟังก์ชันสำหรับแปลงวันที่ให้อยู่ในรูปแบบวันที่ไทย (เช่น 25 พ.ค. 2568)
+   * Input : d (DateTime?) - วันที่ที่ต้องการแปลง
+   * Output : String - ข้อความวันที่ในรูปแบบภาษาไทย
+   */
   String _formatThaiDate(DateTime? d) {
     if (d == null) return "";
     final months = [
@@ -42,6 +50,11 @@ class PackageCard extends StatelessWidget {
     return "${d.day} ${months[d.month]} $yearBE";
   }
 
+  /*
+   * คำอธิบาย : ฟังก์ชันสำหรับสร้างข้อความแสดงสถานะการจองตามเงื่อนไขของสถานะและช่วงวัน
+   * Input : ข้อมูลจากตัวแปรภายใน Class (bookingStatus, bookingStart, bookingEnd, statusText)
+   * Output : String - ข้อความสถานะการจองที่พร้อมแสดงผล
+   */
   String _buildStatusText() {
     if (statusText != null && statusText!.isNotEmpty) return statusText!;
 
@@ -60,6 +73,11 @@ class PackageCard extends StatelessWidget {
     return "สถานะการจอง";
   }
 
+  /*
+   * คำอธิบาย : ฟังก์ชันสำหรับกำหนดสีของป้ายสถานะ (Badge) ตามสถานะการจอง
+   * Input : ข้อมูลจากตัวแปร bookingStatus
+   * Output : Color - ค่าสีที่กำหนดตามมาตรฐาน UI
+   */
   Color _getBadgeColor() {
     switch (bookingStatus) {
       case BookingStatus.OPEN:
@@ -71,6 +89,11 @@ class PackageCard extends StatelessWidget {
     }
   }
 
+  /*
+   * คำอธิบาย : ฟังก์ชันหลักสำหรับการสร้าง UI ของ Component PackageCard
+   * Input : context (BuildContext)
+   * Output : Widget - บล็อกการ์ดหนึ่งใบที่ประกอบด้วยข้อมูลทั้งหมด
+   */
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -168,6 +191,11 @@ class PackageCard extends StatelessWidget {
     );
   }
 
+  /*
+   * คำอธิบาย : ฟังก์ชันสำหรับสร้าง Widget ของแต่ละแท็กเพื่อใช้ในการแสดงผล
+   * Input : text (String) - ข้อความที่ต้องการแสดงในแท็ก
+   * Output : Widget - กล่องข้อความแท็กที่มีรูปแบบตามดีไซน์
+   */
   Widget _buildTag(String text) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
