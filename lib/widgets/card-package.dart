@@ -11,7 +11,7 @@ class PackageCard extends StatelessWidget {
   final String location;
   final DateTime? bookingStart;
   final DateTime? bookingEnd;
-  final BookingStatus bookingStatus;
+  final BookingStatus status;
   final String? statusText;
   final int booked;
   final int capacity;
@@ -26,7 +26,7 @@ class PackageCard extends StatelessWidget {
     required this.location,
     this.bookingStart,
     this.bookingEnd,
-    this.bookingStatus = BookingStatus.OPEN,
+    this.status = BookingStatus.OPEN,
     this.statusText,
     this.booked = 0,
     this.capacity = 50,
@@ -55,19 +55,19 @@ class PackageCard extends StatelessWidget {
    * Input : ข้อมูลจากตัวแปรภายใน Class (bookingStatus, bookingStart, bookingEnd, statusText)
    * Output : String - ข้อความสถานะการจองที่พร้อมแสดงผล
    */
-  String _buildStatusText() {
+  String _buildStatusText(BookingStatus status) {
     if (statusText != null && statusText!.isNotEmpty) return statusText!;
 
     final startStr = _formatThaiDate(bookingStart);
     final endStr = _formatThaiDate(bookingEnd);
 
-    if (bookingStatus == BookingStatus.OPEN && bookingStart != null && bookingEnd != null) {
+    if (status == BookingStatus.OPEN && bookingStart != null && bookingEnd != null) {
       return "เปิดจองแล้ว วันที่ $startStr ถึง $endStr";
     }
-    if (bookingStatus == BookingStatus.UPCOMING && bookingStart != null) {
+    if (status == BookingStatus.UPCOMING && bookingStart != null) {
       return "เปิดให้จองวันที่ $startStr";
     }
-    if (bookingStatus == BookingStatus.CLOSED && bookingEnd != null) {
+    if (status == BookingStatus.CLOSED && bookingEnd != null) {
       return "ปิดจองแล้ว ตั้งแต่ $endStr";
     }
     return "สถานะการจอง";
@@ -78,8 +78,8 @@ class PackageCard extends StatelessWidget {
    * Input : ข้อมูลจากตัวแปร bookingStatus
    * Output : Color - ค่าสีที่กำหนดตามมาตรฐาน UI
    */
-  Color _getBadgeColor() {
-    switch (bookingStatus) {
+  Color _getBadgeColor(BookingStatus status) {
+    switch (status) {
       case BookingStatus.OPEN:
         return const Color(0xFF00C853); // emerald-600
       case BookingStatus.UPCOMING:
@@ -90,12 +90,32 @@ class PackageCard extends StatelessWidget {
   }
 
   /*
+   * คำอธิบาย : ฟังก์ชันภายในสำหรับคำนวณสถานะการจองตามเวลาปัจจุบัน
+   * Input : ไม่มี (ใช้ค่าจาก Property ภายในคลาส)
+   * Output : BookingStatus - สถานะที่คำนวณได้ (UPCOMING, CLOSED, หรือ OPEN)
+   */
+  BookingStatus get _computedStatus {
+    final now = DateTime.now();
+    
+    // 1. ถ้ายังไม่ถึงวันเริ่มจอง
+    if (bookingStart != null && now.isBefore(bookingStart!)) {
+      return BookingStatus.UPCOMING;
+    }
+    // 2. ถ้าเลยวันสิ้นสุดจองไปแล้ว
+    if (bookingEnd != null && now.isAfter(bookingEnd!)) {
+      return BookingStatus.CLOSED;
+    }
+    // 3. ถ้าอยู่ในช่วงเวลา หรือไม่มีข้อมูลวันที่ ให้ถือว่า OPEN ตามมาตรฐานเดิม
+    return BookingStatus.OPEN;
+  }
+  /*
    * คำอธิบาย : ฟังก์ชันหลักสำหรับการสร้าง UI ของ Component PackageCard
    * Input : context (BuildContext)
    * Output : Widget - บล็อกการ์ดหนึ่งใบที่ประกอบด้วยข้อมูลทั้งหมด
    */
   @override
   Widget build(BuildContext context) {
+    final currentStatus = _computedStatus;
     return GestureDetector(
       onTap: onClick,
       child: Container(
@@ -148,11 +168,11 @@ class PackageCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: _getBadgeColor(),
+                        color: _getBadgeColor(currentStatus),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        _buildStatusText(),
+                        _buildStatusText(currentStatus),
                         style: const TextStyle(color: Colors.white, fontSize: 7),
                         maxLines: 1,
                         overflow: TextOverflow.clip,
