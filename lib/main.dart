@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'modules/login/login_controller.dart';
 import 'modules/login/login_screen.dart';
 
@@ -20,7 +21,7 @@ class CulturaApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2ECC8F)),
-        fontFamily: 'Roboto',
+        textTheme: GoogleFonts.sarabunTextTheme(),
       ),
       initialBinding: BindingsBuilder(() {
         Get.lazyPut<LoginController>(() => LoginController());
