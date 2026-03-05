@@ -58,15 +58,7 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - assets/images/carousel1.jpg
-    - assets/images/carousel2.jpg
-    - assets/images/carousel3.png
-    - assets/images/carousel4.jpg
-    - assets/images/carousel5.jpg
-    - assets/images/carousel6.jpg
-    - assets/images/carousel7.jpg
-    - assets/images/carousel8.jpg
-
+    - assets/images/
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

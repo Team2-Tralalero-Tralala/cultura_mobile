@@ -6,15 +6,16 @@ import 'package:get/get.dart';
  * คำอธิบาย : Controller สำหรับจัดการ Logic ของ Carousel (เลื่อนรูปภาพอัตโนมัติ, จัดการสถานะหน้าปัจจุบัน และรายการรูปภาพ)
  */
 class CarouselController extends GetxController {
-  final List<String> images = [
-    'assets/images/carousel1.jpg',
-    'assets/images/carousel2.jpg',
-    'assets/images/carousel3.png',
-    'assets/images/carousel4.jpg',
-    'assets/images/carousel5.jpg',
-    'assets/images/carousel6.jpg',
-    'assets/images/carousel7.jpg',
-    'assets/images/carousel8.jpg',
+  // เก็บแค่ชื่อไฟล์ตามที่ Dev แนะนำ
+  final List<String> imageFiles = [
+    'carousel1.jpg',
+    'carousel2.jpg',
+    'carousel3.png',
+    'carousel4.jpg',
+    'carousel5.jpg',
+    'carousel6.jpg',
+    'carousel7.jpg',
+    'carousel8.jpg',
   ];
 
   final PageController pageController = PageController();
@@ -42,7 +43,7 @@ class CarouselController extends GetxController {
   void _startAutoPlay() {
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      if (currentPage.value < images.length - 1) {
+      if (currentPage.value < imageFiles.length - 1) {
         currentPage.value++;
       } else {
         currentPage.value = 0;
@@ -73,7 +74,7 @@ class CarouselController extends GetxController {
    * Output : void
    */
   void nextPage() {
-    if (currentPage.value < images.length - 1) {
+    if (currentPage.value < imageFiles.length - 1) {
       pageController.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);
     } else {
       pageController.animateToPage(0, duration: const Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);
@@ -89,7 +90,7 @@ class CarouselController extends GetxController {
     if (currentPage.value > 0) {
       pageController.previousPage(duration: const Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);
     } else {
-      pageController.animateToPage(images.length - 1, duration: const Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);
+      pageController.animateToPage(imageFiles.length - 1, duration: const Duration(milliseconds: 500), curve: Curves.fastOutSlowIn);
     }
   }
 }
@@ -120,10 +121,11 @@ class CustomCarousel extends GetView<CarouselController> {
           PageView.builder(
             controller: controller.pageController,
             onPageChanged: controller.handlePageChanged,
-            itemCount: controller.images.length,
+            itemCount: controller.imageFiles.length,
             itemBuilder: (context, index) {
+              // *** นำ Path มาต่อกับชื่อไฟล์ที่นี่ ***
               return Image.asset(
-                controller.images[index],
+                'assets/images/${controller.imageFiles[index]}',
                 fit: BoxFit.cover,
                 width: double.infinity,
               );
@@ -156,7 +158,7 @@ class CustomCarousel extends GetView<CarouselController> {
               child: Obx(() => Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
-                      controller.images.length,
+                      controller.imageFiles.length,
                       (index) => AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
                         margin: const EdgeInsets.symmetric(horizontal: 4),
