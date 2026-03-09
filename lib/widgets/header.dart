@@ -5,11 +5,7 @@ class HeaderWidget extends StatelessWidget {
   final ValueChanged<String>? onSearchChanged;
   final VoidCallback? onSearchTap;
 
-  const HeaderWidget({
-    super.key,
-    this.onSearchChanged,
-    this.onSearchTap,
-  });
+  const HeaderWidget({super.key, this.onSearchChanged, this.onSearchTap});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +14,7 @@ class HeaderWidget extends StatelessWidget {
       child: Row(
         children: [
           Image.asset(
-            'assets/images/logo.png',
+            'assets/images/logo-black.png',
             width: 98.25,
             height: 35.93,
           ),

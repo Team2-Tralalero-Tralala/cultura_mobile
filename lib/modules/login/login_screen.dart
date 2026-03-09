@@ -28,7 +28,7 @@ class LoginScreen extends GetView<LoginController> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 40),
                   child: Image.asset(
-                    'assets/images/logo.png',
+                    'assets/images/logo-white.png',
                     height: 120,
                     fit: BoxFit.contain,
                   ),
