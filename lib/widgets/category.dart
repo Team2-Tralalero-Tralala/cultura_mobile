@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 
+/*
+ * คำอธิบาย : Interface สำหรับข้อมูลหมวดหมู่ที่ส่งเข้า CategoryWidget
+ * ใช้กำหนดชื่อหมวดหมู่, ชื่อไอคอน และ callback เมื่อกด
+ */
 class CategoryItem {
+  /// ชื่อหมวดหมู่ที่แสดงใต้ไอคอน
   final String label;
+
+  /// ชื่อไอคอน (string key) สำหรับ map ไปยัง Material icon
   final String iconName;
+
+  /// ฟังก์ชันเมื่อผู้ใช้กดหมวดหมู่
   final VoidCallback? onClick;
 
   const CategoryItem({
@@ -12,11 +21,19 @@ class CategoryItem {
   });
 }
 
+/**
+ * คำอธิบาย: Widget สำหรับแสดงหมวดหมู่แบบแนวนอน
+ * Input:
+ *   - categories: List<CategoryItem>? (ถ้าไม่ส่งเข้ามาจะใช้ default categories)
+ * Output: Widget แสดงรายการหมวดหมู่ที่กดได้
+ */
 class CategoryWidget extends StatelessWidget {
+  /// รายการหมวดหมู่จากภายนอก (optional)
   final List<CategoryItem>? categories;
 
   const CategoryWidget({super.key, this.categories});
 
+  /// ข้อมูลหมวดหมู่เริ่มต้นเมื่อไม่ได้ส่ง input มา
   static final List<CategoryItem> _defaultCategories = [
     const CategoryItem(label: 'ทะเล', iconName: 'waves'),
     const CategoryItem(label: 'ที่พัก', iconName: 'hotel'),
@@ -39,6 +56,12 @@ class CategoryWidget extends StatelessWidget {
     'directions_bike': Icons.directions_bike_outlined,
   };
 
+  /*
+   * ฟังก์ชัน : _resolveIcon
+   * คำอธิบาย : แปลง iconName ที่เป็น string ให้เป็น IconData
+   * Input : iconName (string)
+   * Output : IconData (fallback เป็น Icons.category_outlined)
+   */
   IconData _resolveIcon(String iconName) {
     return _iconMap[iconName] ?? Icons.category_outlined;
   }
@@ -81,6 +104,10 @@ class CategoryWidget extends StatelessWidget {
   }
 }
 
+/*
+ * คำอธิบาย : Tile ย่อยสำหรับแต่ละหมวดหมู่ใน CategoryWidget
+ * ใช้แยก UI ของแต่ละ item ให้อ่านง่ายและดูแลง่ายขึ้น
+ */
 class _CategoryTile extends StatelessWidget {
   final CategoryItem item;
   final IconData icon;
