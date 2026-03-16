@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../services/api_service.dart' as api;
-import '../home/home_screen.dart';
+import '../package_detail/package_detail_screen.dart';
 
 class LoginController extends GetxController {
   final usernameController = TextEditingController();
@@ -58,7 +58,7 @@ class LoginController extends GetxController {
         }
       }
 
-      Get.offAll(() => const HomeScreen());
+      Get.offAll(() => const PackageDetailScreen());
     } else {
       Get.snackbar(
         'ข้อผิดพลาด',

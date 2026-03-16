@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -21,8 +22,18 @@ final dio =
             final token = await storage.read(key: 'auth_token');
             if (token != null) {
               options.headers['Authorization'] = 'Bearer $token';
+              debugPrint('🔐 Token found: ${token.substring(0, 20)}...');
+            } else {
+              debugPrint('🔓 No token found');
             }
+            debugPrint('📤 Request: ${options.method} ${options.path}');
             return handler.next(options);
+          },
+          onError: (DioException e, handler) {
+            debugPrint('❌ DIO Error: ${e.message}');
+            debugPrint('❌ Status Code: ${e.response?.statusCode}');
+            debugPrint('❌ Response: ${e.response?.data}');
+            return handler.next(e);
           },
         ),
       );
@@ -92,9 +103,15 @@ Future<ApiResponse> getMe() async {
 
 Future<ApiResponse> getPackageById(int packageId) async {
   try {
+    debugPrint('📡 Requesting package detail for ID: $packageId');
     final response = await dio.get('/package/$packageId');
+    debugPrint('✅ Response Status: ${response.statusCode}');
+    debugPrint('📦 Response Data: ${response.data}');
     return ApiResponse.fromResponse(response);
   } on DioException catch (e) {
+    debugPrint('❌ DioException in getPackageById: ${e.message}');
+    debugPrint('❌ Status Code: ${e.response?.statusCode}');
+    debugPrint('❌ Response: ${e.response?.data}');
     return ApiResponse.fromError(e);
   }
 }
