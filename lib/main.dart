@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'modules/login/login_controller.dart';
 import 'modules/login/login_screen.dart';
+import 'modules/search/search_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,6 +28,10 @@ class CulturaApp extends StatelessWidget {
         Get.lazyPut<LoginController>(() => LoginController());
       }),
       home: const LoginScreen(),
+
+      getPages: [
+        GetPage(name: '/search', page: () => SearchScreen()),
+      ],
     );
   }
 }
