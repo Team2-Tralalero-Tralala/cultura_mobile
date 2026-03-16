@@ -4,7 +4,7 @@
  */
 import 'package:flutter/material.dart';
 
-enum BottomNavType { NEW, HOME, POPULAR }
+enum BottomNavType { NEW, HOME, POPULAR, BOOKING }
 
 class BottomNavigate extends StatelessWidget {
   final BottomNavType current;
@@ -29,6 +29,8 @@ class BottomNavigate extends StatelessWidget {
         return 1;
       case BottomNavType.POPULAR:
         return 2;
+      case BottomNavType.BOOKING:
+        return 1;
     }
   }
 
@@ -37,11 +39,7 @@ class BottomNavigate extends StatelessWidget {
    * Input : type (BottomNavType), icon (IconData), label (String)
    * Output : Widget - รายการเมนู 1 ช่อง
    */
-  Widget _buildItem(
-    BottomNavType type,
-    IconData icon,
-    String label,
-  ) {
+  Widget _buildItem(BottomNavType type, IconData icon, String label) {
     final bool showBlackBorder = type == BottomNavType.NEW;
 
     return Expanded(
@@ -59,23 +57,12 @@ class BottomNavigate extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.black,
-                        width: 2,
-                      ),
+                      border: Border.all(color: Colors.black, width: 2),
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    child: Icon(
-                      icon,
-                      size: 34,
-                      color: Colors.black,
-                    ),
+                    child: Icon(icon, size: 34, color: Colors.black),
                   )
-                : Icon(
-                    icon,
-                    size: 34,
-                    color: Colors.black,
-                  ),
+                : Icon(icon, size: 34, color: Colors.black),
             const SizedBox(height: 6),
             Text(
               label,
@@ -104,8 +91,7 @@ class BottomNavigate extends StatelessWidget {
     const double circleSize = 120;
 
     final double leftPosition =
-        (_getIndex() * itemWidth) +
-        (itemWidth - circleSize) / 2;
+        (_getIndex() * itemWidth) + (itemWidth - circleSize) / 2;
 
     return Container(
       height: 110,
@@ -144,11 +130,7 @@ class BottomNavigate extends StatelessWidget {
                 Icons.fiber_new_outlined,
                 "แพ็กเกจมาใหม่",
               ),
-              _buildItem(
-                BottomNavType.HOME,
-                Icons.home_outlined,
-                "หน้าแรก",
-              ),
+              _buildItem(BottomNavType.HOME, Icons.home_outlined, "หน้าแรก"),
               _buildItem(
                 BottomNavType.POPULAR,
                 Icons.work_outline,
