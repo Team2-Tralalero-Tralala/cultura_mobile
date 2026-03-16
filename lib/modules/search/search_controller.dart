@@ -9,29 +9,17 @@ class SearchPackageController extends GetxController {
 
 
   Future<void> search(String value) async {
-
     keyword.value = value;
-
     try {
-
       isLoading.value = true;
-
       final res = await searchPackages(value);
-      
       if (res.success) {
         packages.value = res.data["data"];
       }
-
     } catch (e) {
-
       print(e);
-
     } finally {
-
       isLoading.value = false;
-
     }
-
   }
-
 }
