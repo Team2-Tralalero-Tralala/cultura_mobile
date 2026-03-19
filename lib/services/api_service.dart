@@ -88,6 +88,15 @@ Future<ApiResponse> getMe() async {
   }
 }
 
+Future<ApiResponse> getHome() async {
+  try {
+    final response = await dio.get('/home');
+    return ApiResponse.fromResponse(response);
+  } on DioException catch (e) {
+    return ApiResponse.fromError(e);
+  }
+}
+
 // ==================== Packages ====================
 
 Future<ApiResponse> getPackageById(int packageId) async {
