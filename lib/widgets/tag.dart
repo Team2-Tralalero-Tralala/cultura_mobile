@@ -67,15 +67,12 @@ class TagsSection extends GetView<TagsSectionController> {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 32.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-
           children: [
-            const SizedBox(height: 24),
-
             // Tags Grid
             Wrap(
               spacing: 12.0,
