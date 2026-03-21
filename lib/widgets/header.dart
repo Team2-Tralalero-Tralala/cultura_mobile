@@ -3,9 +3,15 @@ import 'search_bar.dart';
 
 class HeaderWidget extends StatelessWidget {
   final ValueChanged<String>? onSearchChanged;
+  final ValueChanged<String>? onSearchSubmitted;
   final VoidCallback? onSearchTap;
 
-  const HeaderWidget({super.key, this.onSearchChanged, this.onSearchTap});
+  const HeaderWidget({
+    super.key, 
+    this.onSearchChanged, 
+    this.onSearchSubmitted,
+    this.onSearchTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +30,7 @@ class HeaderWidget extends StatelessWidget {
               height: 30,
               child: SearchBarWidget(
                 onChanged: onSearchChanged,
+                onSubmitted: onSearchSubmitted,
                 onTap: onSearchTap,
               ),
             ),

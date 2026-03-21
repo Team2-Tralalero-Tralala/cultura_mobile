@@ -74,7 +74,7 @@ class CategoryWidget extends StatelessWidget {
 
     return SizedBox(
       width: double.infinity,
-      height: 112,
+      height: 80,
       child: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(
@@ -120,18 +120,18 @@ class _CategoryTile extends StatelessWidget {
       borderRadius: BorderRadius.circular(14),
       onTap: item.onClick ?? () {},
       child: SizedBox(
-        width: 58,
+        width: 50,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 56,
-              height: 56,
+              width: 40,
+              height: 40,
               decoration: const BoxDecoration(
                 color: Color(0xFFF2F2F2),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, size: 33, color: Colors.black),
+              child: Icon(icon, size: 24, color: Colors.black),
             ),
             const SizedBox(height: 9),
             Text(
@@ -140,7 +140,7 @@ class _CategoryTile extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                fontSize: 13,
+                fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: Colors.black,
                 height: 1.2,

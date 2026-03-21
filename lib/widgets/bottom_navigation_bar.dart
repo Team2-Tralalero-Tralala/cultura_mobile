@@ -3,6 +3,7 @@
  * โดยกำหนดให้กรอบสีดำแสดงเฉพาะไอคอน "แพ็กเกจมาใหม่" เท่านั้น
  */
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 enum BottomNavType { NEW, HOME, POPULAR }
 
@@ -34,20 +35,24 @@ class BottomNavigate extends StatelessWidget {
 
   /*
    * คำอธิบาย : ฟังก์ชันสำหรับสร้างแต่ละเมนูใน Bottom Navigation
-   * Input : type (BottomNavType), icon (IconData), label (String)
+   * Input : type (BottomNavType), icon (IconData), label (String), route (String?)
    * Output : Widget - รายการเมนู 1 ช่อง
    */
   Widget _buildItem(
     BottomNavType type,
     IconData icon,
-    String label,
-  ) {
+    String label, [
+    String? route,
+  ]) {
     final bool showBlackBorder = type == BottomNavType.NEW;
 
     return Expanded(
       child: GestureDetector(
         onTap: () {
           onChanged(type);
+          if (current != type && route != null) {
+            Get.toNamed(route);
+          }
         },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -59,23 +64,12 @@ class BottomNavigate extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.black,
-                        width: 2,
-                      ),
+                      border: Border.all(color: Colors.black, width: 2),
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    child: Icon(
-                      icon,
-                      size: 34,
-                      color: Colors.black,
-                    ),
+                    child: Icon(icon, size: 34, color: Colors.black),
                   )
-                : Icon(
-                    icon,
-                    size: 34,
-                    color: Colors.black,
-                  ),
+                : Icon(icon, size: 34, color: Colors.black),
             const SizedBox(height: 6),
             Text(
               label,
@@ -104,8 +98,7 @@ class BottomNavigate extends StatelessWidget {
     const double circleSize = 120;
 
     final double leftPosition =
-        (_getIndex() * itemWidth) +
-        (itemWidth - circleSize) / 2;
+        (_getIndex() * itemWidth) + (itemWidth - circleSize) / 2;
 
     return Container(
       height: 110,
@@ -143,16 +136,19 @@ class BottomNavigate extends StatelessWidget {
                 BottomNavType.NEW,
                 Icons.fiber_new_outlined,
                 "แพ็กเกจมาใหม่",
+                '/newPackages',
               ),
               _buildItem(
                 BottomNavType.HOME,
                 Icons.home_outlined,
                 "หน้าแรก",
+                '/home',
               ),
               _buildItem(
                 BottomNavType.POPULAR,
                 Icons.work_outline,
                 "แพ็กเกจยอดนิยม",
+                '/popularPackages',
               ),
             ],
           ),

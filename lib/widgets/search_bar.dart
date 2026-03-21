@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 
 class SearchBarWidget extends StatelessWidget {
   final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
   final VoidCallback? onTap;
   final TextEditingController? controller;
 
   const SearchBarWidget({
     super.key,
     this.onChanged,
+    this.onSubmitted,
     this.onTap,
     this.controller,
   });
@@ -26,6 +28,8 @@ class SearchBarWidget extends StatelessWidget {
       child: TextField(
         controller: controller,
         onChanged: onChanged,
+        onSubmitted: onSubmitted,
+        textInputAction: TextInputAction.search,
         onTap: onTap,
         style: const TextStyle(fontSize: 12),
         decoration: const InputDecoration(

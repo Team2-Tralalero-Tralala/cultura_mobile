@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cultura_mobile/modules/package/popular_package_screen.dart';
+import 'package:get/get.dart';
 import 'package:cultura_mobile/services/api_service.dart';
 import 'package:cultura_mobile/widgets/bottom_navigation_bar.dart';
 import 'package:cultura_mobile/widgets/card_package.dart';
@@ -72,10 +72,32 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const HeaderWidget(),
-              const SizedBox(height: 24),
-              const CategoryWidget(),
-              const SizedBox(height: 24),
+              Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFF6BCEAE), Color(0xFF429170)],
+                  ),
+                ),
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Column(
+                  children: [
+                    HeaderWidget(
+                      onSearchSubmitted: (keyword) {
+                        if (keyword.isNotEmpty) {
+                          Get.toNamed(
+                            '/searchPackages',
+                            arguments: {'keyword': keyword},
+                          );
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    const CategoryWidget(),
+                  ],
+                ),
+              ),
               CustomCarousel(),
               const SizedBox(height: 24),
               Padding(
@@ -190,7 +212,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               bookingEnd: end,
                               tags: tags,
                               onClick: () {
-                                // Navigate to package details
+                                final pId = pkg['id'] ?? pkg['package_id'];
+                                if (pId != null) {
+                                  Get.toNamed('/packageDetail', arguments: pId);
+                                }
                               },
                             ),
                           );
@@ -203,7 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   alignment: Alignment.centerRight,
                   child: GestureDetector(
                     onTap: () {
-                      // Navigate to new packages
+                      Get.toNamed('/popularPackage');
                     },
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -234,7 +259,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     const Text(
                       'แพ็กเกจยอดนิยม',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Container(
@@ -331,7 +359,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               bookingEnd: end,
                               tags: tags,
                               onClick: () {
-                                // Navigate to package details
+                                final pId = pkg['id'] ?? pkg['package_id'];
+                                if (pId != null) {
+                                  Get.toNamed('/packageDetail', arguments: pId);
+                                }
                               },
                             ),
                           );
@@ -345,12 +376,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: GestureDetector(
                     onTap: () {
                       // Navigate to popular packages
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const PopularPackageScreen(),
-                        ),
-                      );
+                      Get.toNamed('/packages?filter=popular');
                     },
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -398,24 +424,9 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigate(
         current: _currentPage,
         onChanged: (type) {
-          if (type == BottomNavType.POPULAR) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const PopularPackageScreen(),
-              ),
-            ).then((_) {
-              if (mounted) {
-                setState(() {
-                  _currentPage = BottomNavType.HOME;
-                });
-              }
-            });
-          } else {
-            setState(() {
-              _currentPage = type;
-            });
-          }
+          setState(() {
+            _currentPage = type;
+          });
         },
       ),
     );
