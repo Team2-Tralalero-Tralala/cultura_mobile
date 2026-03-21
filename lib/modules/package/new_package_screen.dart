@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:cultura_mobile/services/api_service.dart';
 import 'package:cultura_mobile/widgets/card_package.dart';
 import 'package:cultura_mobile/widgets/header.dart';
@@ -102,22 +103,22 @@ class PackageModel {
   }
 }
 
-// ==================== PackagesScreen ====================
+// ==================== NewPackageScreen ====================
 
-class PackagesScreen extends StatefulWidget {
-  const PackagesScreen({super.key});
+class NewPackageScreen extends StatefulWidget {
+  const NewPackageScreen({super.key});
 
   @override
-  State<PackagesScreen> createState() => _PackagesScreenState();
+  State<NewPackageScreen> createState() => _NewPackageScreenState();
 }
 
-class _PackagesScreenState extends State<PackagesScreen> {
+class _NewPackageScreenState extends State<NewPackageScreen> {
   List<PackageModel> _packages = [];
   List<PackageModel> _filtered = [];
   bool _isLoading = true;
   String? _error;
   String _searchKeyword = '';
-  BottomNavType _currentNav = BottomNavType.POPULAR;
+  BottomNavType _currentNav = BottomNavType.NEW;
 
   @override
   void initState() {
@@ -134,7 +135,7 @@ class _PackagesScreenState extends State<PackagesScreen> {
       _error = null;
     });
 
-    final result = await getPackages(filter: 'popular');
+    final result = await getPackages(filter: 'newest');
 
     if (!mounted) return;
 
@@ -177,19 +178,61 @@ class _PackagesScreenState extends State<PackagesScreen> {
   /*
    * คำอธิบาย : กรองแพ็กเกจตาม keyword ที่พิมพ์ใน search bar
    */
-  void _onSearchChanged(String keyword) {
+  Future<void> _onSearchChanged(String keyword) async {
+    final query = keyword.trim().toLowerCase();
     setState(() {
-      _searchKeyword = keyword.trim().toLowerCase();
-      if (_searchKeyword.isEmpty) {
-        _filtered = _packages;
-      } else {
-        _filtered = _packages.where((p) {
-          return p.title.toLowerCase().contains(_searchKeyword) ||
-              p.location.toLowerCase().contains(_searchKeyword) ||
-              p.tags.any((t) => t.toLowerCase().contains(_searchKeyword));
-        }).toList();
-      }
+      _searchKeyword = query;
     });
+
+    if (query.isEmpty) {
+      setState(() {
+        _filtered = _packages;
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    final result = await searchPackages(query);
+
+    if (!mounted) return;
+
+    if (!result.success) {
+      setState(() {
+        _isLoading = false;
+        _error = result.message ?? 'ค้นหาไม่สำเร็จ';
+      });
+      return;
+    }
+
+    try {
+      final raw = result.data;
+      List<dynamic> list = [];
+
+      if (raw is List) {
+        list = raw;
+      } else if (raw is Map) {
+        list = raw['data'] ?? raw['packages'] ?? raw['items'] ?? [];
+      }
+
+      final searchResults = list
+          .whereType<Map<String, dynamic>>()
+          .map((e) => PackageModel.fromJson(e))
+          .toList();
+
+      setState(() {
+        _filtered = searchResults;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _error = 'ไม่สามารถแปลงข้อมูลการค้นหาได้: $e';
+      });
+    }
   }
 
   /*
@@ -199,17 +242,6 @@ class _PackagesScreenState extends State<PackagesScreen> {
     setState(() {
       _currentNav = type;
     });
-    // TODO: navigate ไปหน้าอื่นตาม type
-    // switch (type) {
-    //   case BottomNavType.NEW:
-    //     Get.to(() => const NewPackagesScreen());
-    //     break;
-    //   case BottomNavType.HOME:
-    //     Get.to(() => const HomeScreen());
-    //     break;
-    //   case BottomNavType.POPULAR:
-    //     break; // อยู่หน้านี้แล้ว
-    // }
   }
 
   @override
@@ -238,7 +270,7 @@ class _PackagesScreenState extends State<PackagesScreen> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF4CAF93), Color(0xFF2E7D5E)],
+          colors: [Color(0xFF6BCEAE), Color(0xFF429170)],
         ),
       ),
       padding: const EdgeInsets.only(bottom: 16),
@@ -251,7 +283,7 @@ class _PackagesScreenState extends State<PackagesScreen> {
             child: Row(
               children: [
                 const Text(
-                  'แพ็กเกจยอดนิยม',
+                  'แพ็กเกจมาใหม่',
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
@@ -259,7 +291,11 @@ class _PackagesScreenState extends State<PackagesScreen> {
                   ),
                 ),
                 const SizedBox(width: 6),
-                const Icon(Icons.star_rounded, color: Colors.amber, size: 20),
+                const Icon(
+                  Icons.fiber_new_rounded,
+                  color: Colors.orange,
+                  size: 24,
+                ),
               ],
             ),
           ),
@@ -348,10 +384,13 @@ class _PackagesScreenState extends State<PackagesScreen> {
             tags: p.tags,
             priceTHB: p.priceTHB,
             onClick: () {
-              // TODO: Navigate to package detail
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('เปิดแพ็กเกจ: ${p.title}')),
-              );
+              if (p.id > 0) {
+                Get.toNamed('/packageDetail', arguments: p.id);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('รหัสแพ็กเกจไม่ถูกต้อง')),
+                );
+              }
             },
           );
         },
