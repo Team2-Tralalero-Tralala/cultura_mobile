@@ -332,7 +332,7 @@ class _BottomWavesPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     final strokePaint = Paint()
-      ..color = const Color.fromARGB(255, 1, 61, 35)
+      ..color = const Color.fromARGB(255, 4, 155, 89)
       ..strokeWidth = 2.0
       ..style = PaintingStyle.stroke;
 
