@@ -228,7 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   alignment: Alignment.centerRight,
                   child: GestureDetector(
                     onTap: () {
-                      Get.toNamed('/popularPackage');
+                      Get.toNamed('/newPackages');
                     },
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -375,8 +375,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   alignment: Alignment.centerRight,
                   child: GestureDetector(
                     onTap: () {
-                      // Navigate to popular packages
-                      Get.toNamed('/packages?filter=popular');
+                      Get.toNamed('/popularPackages');
                     },
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
