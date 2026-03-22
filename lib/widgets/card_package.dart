@@ -43,8 +43,19 @@ class PackageCard extends StatelessWidget {
   String _formatThaiDate(DateTime? d) {
     if (d == null) return "";
     final months = [
-      "", "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
-      "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."
+      "",
+      "ม.ค.",
+      "ก.พ.",
+      "มี.ค.",
+      "เม.ย.",
+      "พ.ค.",
+      "มิ.ย.",
+      "ก.ค.",
+      "ส.ค.",
+      "ก.ย.",
+      "ต.ค.",
+      "พ.ย.",
+      "ธ.ค.",
     ];
     final yearBE = d.year + 543;
     return "${d.day} ${months[d.month]} $yearBE";
@@ -61,7 +72,9 @@ class PackageCard extends StatelessWidget {
     final startStr = _formatThaiDate(bookingStart);
     final endStr = _formatThaiDate(bookingEnd);
 
-    if (status == BookingStatus.OPEN && bookingStart != null && bookingEnd != null) {
+    if (status == BookingStatus.OPEN &&
+        bookingStart != null &&
+        bookingEnd != null) {
       return "เปิดจองแล้ว วันที่ $startStr ถึง $endStr";
     }
     if (status == BookingStatus.UPCOMING && bookingStart != null) {
@@ -96,7 +109,7 @@ class PackageCard extends StatelessWidget {
    */
   BookingStatus get _computedStatus {
     final now = DateTime.now();
-    
+
     // 1. ถ้ายังไม่ถึงวันเริ่มจอง
     if (bookingStart != null && now.isBefore(bookingStart!)) {
       return BookingStatus.UPCOMING;
@@ -108,6 +121,7 @@ class PackageCard extends StatelessWidget {
     // 3. ถ้าอยู่ในช่วงเวลา หรือไม่มีข้อมูลวันที่ ให้ถือว่า OPEN ตามมาตรฐานเดิม
     return BookingStatus.OPEN;
   }
+
   /*
    * คำอธิบาย : ฟังก์ชันหลักสำหรับการสร้าง UI ของ Component PackageCard
    * Input : context (BuildContext)
@@ -125,8 +139,14 @@ class PackageCard extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.grey.shade300),
-          boxShadow: onClick != null 
-              ? [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))]
+          boxShadow: onClick != null
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
               : null,
         ),
         child: Column(
@@ -134,7 +154,9 @@ class PackageCard extends StatelessWidget {
           children: [
             // รูปภาพ
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(12),
+              ),
               child: Image.network(
                 image,
                 height: 100,
@@ -142,7 +164,7 @@ class PackageCard extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
             ),
-            
+
             // เนื้อหา
             Expanded(
               child: Padding(
@@ -152,39 +174,54 @@ class PackageCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 8),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 11,
+                      ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
                       location,
-                      style: TextStyle(color: Colors.grey.shade600, fontSize: 7),
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 8,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
-                    
+
                     // ป้ายสถานะ (Badge)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: _getBadgeColor(currentStatus),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
                         _buildStatusText(currentStatus),
-                        style: const TextStyle(color: Colors.white, fontSize: 7),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 8,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.clip,
                       ),
                     ),
-                    
+
                     const SizedBox(height: 4),
                     Text(
                       'จำนวนคน $booked/$capacity จองแล้ว',
-                      style: const TextStyle(fontSize: 8, color: Color(0xFF475569)),
+                      style: const TextStyle(
+                        fontSize: 8,
+                        color: Color(0xFF475569),
+                      ),
                     ),
-                    
+
                     const SizedBox(height: 4),
                     Wrap(
                       spacing: 4,
@@ -194,12 +231,16 @@ class PackageCard extends StatelessWidget {
                         if (tags.length > 3) _buildTag('...'),
                       ],
                     ),
-                    
+
                     const Spacer(),
-                    
+
                     Text(
                       'ราคา THB ${priceTHB.toStringAsFixed(2)}',
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 8, color: Color(0xFF0F172A)),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 8,
+                        color: Color(0xFF0F172A),
+                      ),
                     ),
                   ],
                 ),
@@ -225,7 +266,7 @@ class PackageCard extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: const TextStyle(fontSize: 7, color: Colors.grey),
+        style: const TextStyle(fontSize: 8, color: Colors.grey),
         maxLines: 1,
       ),
     );

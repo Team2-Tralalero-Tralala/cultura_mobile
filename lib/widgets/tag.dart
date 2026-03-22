@@ -8,14 +8,11 @@ import 'package:get/get.dart';
 class TagsSectionProps {
   /// รายการแท็กที่จะแสดง (array of strings)
   final List<String> tags;
-  
+
   /// ฟังก์ชันที่เรียกเมื่อคลิกแท็ก
   final ValueChanged<String>? onTagClick;
 
-  const TagsSectionProps({
-    required this.tags,
-    this.onTagClick,
-  });
+  const TagsSectionProps({required this.tags, this.onTagClick});
 }
 
 /*
@@ -51,12 +48,11 @@ class TagsSectionController extends GetxController {
 class TagsSection extends GetView<TagsSectionController> {
   final TagsSectionProps props;
 
-  TagsSection({
-    super.key,
-    required this.props,
-  }) {
+  TagsSection({super.key, required this.props}) {
     // ลงทะเบียน Controller ถ้ายังไม่มี
-    if (!Get.isRegistered<TagsSectionController>(tag: props.hashCode.toString())) {
+    if (!Get.isRegistered<TagsSectionController>(
+      tag: props.hashCode.toString(),
+    )) {
       Get.put(TagsSectionController(props), tag: props.hashCode.toString());
     }
   }
@@ -97,7 +93,7 @@ class TagsSection extends GetView<TagsSectionController> {
                         tag,
                         style: const TextStyle(
                           color: Colors.black,
-                          fontSize: 14,
+                          fontSize: 12,
                           fontWeight: FontWeight.normal,
                         ),
                       ),

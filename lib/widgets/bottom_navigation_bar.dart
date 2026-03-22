@@ -75,7 +75,7 @@ class BottomNavigate extends StatelessWidget {
               label,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                fontSize: 14,
+                fontSize: 12,
                 fontWeight: FontWeight.w500,
                 color: Colors.black,
               ),
