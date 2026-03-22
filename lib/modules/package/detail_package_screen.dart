@@ -1,15 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package_detail_controller.dart';
+import 'package_controller.dart';
 
-class PackageDetailScreen extends GetView<PackageDetailController> {
+class PackageDetailScreen extends StatefulWidget {
   const PackageDetailScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    if (!Get.isRegistered<PackageDetailController>()) {
-      Get.put(PackageDetailController());
+  State<PackageDetailScreen> createState() => _PackageDetailScreenState();
+}
+
+class _PackageDetailScreenState extends State<PackageDetailScreen> {
+  late final PackageController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!Get.isRegistered<PackageController>()) {
+      controller = Get.put(PackageController());
+    } else {
+      controller = Get.find<PackageController>();
     }
+
+    final args = Get.arguments;
+    if (args != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (args is int) {
+          controller.fetchPackage(args);
+        } else if (args is Map && args['packageId'] != null) {
+          controller.fetchPackage(args['packageId'] as int);
+        }
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
 
     // ตัวแปรสำหรับจัดการสไลด์รูปภาพที่พัก
     final PageController galleryPageController = PageController();
@@ -134,18 +159,18 @@ class PackageDetailScreen extends GetView<PackageDetailController> {
         ),
       ),
       body: Obx(() {
-        if (controller.isLoading.value) {
+        if (controller.isDetailLoading.value) {
           return const Center(child: CircularProgressIndicator(color: Color(0xFF00C853)));
         }
 
-        if (controller.errorMessage.value != null && controller.errorMessage.value!.isNotEmpty) {
+        if (controller.detailErrorMessage.value != null && controller.detailErrorMessage.value!.isNotEmpty) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Icon(Icons.error_outline, color: Colors.red, size: 48),
                 const SizedBox(height: 16),
-                Text(controller.errorMessage.value ?? '', style: const TextStyle(color: Colors.red)),
+                Text(controller.detailErrorMessage.value ?? '', style: const TextStyle(color: Colors.red)),
                 TextButton(onPressed: () => Navigator.pop(context), child: const Text('กลับไป')),
               ],
             ),

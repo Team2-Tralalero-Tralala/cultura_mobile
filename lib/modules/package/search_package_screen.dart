@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:cultura_mobile/services/api_service.dart';
 import 'package:cultura_mobile/widgets/card_package.dart';
 import 'package:cultura_mobile/widgets/header.dart';
 import 'package:cultura_mobile/widgets/bottom_navigation_bar.dart';
-import 'package:cultura_mobile/modules/package/new_package_screen.dart'; // for PackageModel
+import 'package_controller.dart';
+import 'package_model.dart';
 
 class SearchPackageScreen extends StatefulWidget {
   const SearchPackageScreen({super.key});
@@ -15,9 +15,8 @@ class SearchPackageScreen extends StatefulWidget {
 }
 
 class _SearchPackageScreenState extends State<SearchPackageScreen> {
-  List<PackageModel> _packages = [];
-  bool _isLoading = true;
-  String? _error;
+  final PackageController controller = Get.put(PackageController());
+
   String _searchKeyword = '';
   BottomNavType _currentNav = BottomNavType.HOME;
 
@@ -30,7 +29,15 @@ class _SearchPackageScreenState extends State<SearchPackageScreen> {
     if (args != null && args is Map && args.containsKey('keyword')) {
       _searchKeyword = args['keyword'] ?? '';
     }
-    _loadPackages();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_searchKeyword.isNotEmpty) {
+        controller.searchPackagesList(_searchKeyword);
+      } else {
+        // clear search explicitly if empty
+        controller.searchResults.clear();
+      }
+    });
   }
 
   @override
@@ -39,58 +46,6 @@ class _SearchPackageScreenState extends State<SearchPackageScreen> {
     super.dispose();
   }
 
-  /*
-   * คำอธิบาย : โหลดแพ็กเกจจาก API โดยใช้ searchPackages
-   */
-  Future<void> _loadPackages() async {
-    if (!mounted) return;
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-
-    final result = await searchPackages(_searchKeyword);
-
-    if (!mounted) return;
-
-    if (!result.success) {
-      setState(() {
-        _isLoading = false;
-        _error = result.message ?? 'โหลดข้อมูลไม่สำเร็จ';
-      });
-      return;
-    }
-
-    try {
-      final raw = result.data;
-      List<dynamic> list = [];
-
-      if (raw is List) {
-        list = raw;
-      } else if (raw is Map) {
-        list = raw['data'] ?? raw['packages'] ?? raw['items'] ?? [];
-      }
-
-      final packages = list
-          .whereType<Map<String, dynamic>>()
-          .map((e) => PackageModel.fromJson(e))
-          .toList();
-
-      setState(() {
-        _packages = packages;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-        _error = 'ไม่สามารถแปลงข้อมูลได้: $e';
-      });
-    }
-  }
-
-  /*
-   * คำอธิบาย : กรองแพ็กเกจโดยเมื่อพิมพ์แล้วจะหน่วงเวลาสักพักก่อนค้นหา
-   */
   void _onSearchChanged(String keyword) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
@@ -98,25 +53,27 @@ class _SearchPackageScreenState extends State<SearchPackageScreen> {
       setState(() {
         _searchKeyword = keyword.trim();
       });
-      _loadPackages();
+      if (_searchKeyword.isNotEmpty) {
+        controller.searchPackagesList(_searchKeyword);
+      } else {
+        controller.searchResults.clear();
+      }
     });
   }
 
-  /*
-   * คำอธิบาย : กรองแพ็กเกจเมื่อกด Enter ค้นหาทันที
-   */
   void _onSearchSubmitted(String keyword) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     if (!mounted) return;
     setState(() {
       _searchKeyword = keyword.trim();
     });
-    _loadPackages();
+    if (_searchKeyword.isNotEmpty) {
+      controller.searchPackagesList(_searchKeyword);
+    } else {
+      controller.searchResults.clear();
+    }
   }
 
-  /*
-   * คำอธิบาย : จัดการการเปลี่ยน tab ใน BottomNavigate
-   */
   void _onNavChanged(BottomNavType type) {
     setState(() {
       _currentNav = type;
@@ -177,96 +134,117 @@ class _SearchPackageScreenState extends State<SearchPackageScreen> {
   }
 
   Widget _buildBody() {
-    if (_isLoading) {
-      return const Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CircularProgressIndicator(color: Color(0xFF4CAF93)),
-            SizedBox(height: 12),
-            Text('กำลังค้นหาแพ็กเกจ...', style: TextStyle(color: Colors.grey)),
-          ],
-        ),
-      );
-    }
+    return Obx(() {
+      final isLoading = controller.isSearchLoading.value;
+      final error = controller.searchErrorMessage.value;
+      final List<PackageModel> items = controller.searchResults;
 
-    if (_error != null) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.wifi_off_rounded, size: 48, color: Colors.grey),
-            const SizedBox(height: 12),
-            Text(_error!, style: const TextStyle(color: Colors.grey)),
-            const SizedBox(height: 16),
-            ElevatedButton.icon(
-              onPressed: _loadPackages,
-              icon: const Icon(Icons.refresh),
-              label: const Text('ลองใหม่'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF4CAF93),
-                foregroundColor: Colors.white,
+      if (isLoading) {
+        return const Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(color: Color(0xFF4CAF93)),
+              SizedBox(height: 12),
+              Text(
+                'กำลังค้นหาแพ็กเกจ...',
+                style: TextStyle(color: Colors.grey),
               ),
-            ),
-          ],
-        ),
-      );
-    }
+            ],
+          ),
+        );
+      }
 
-    if (_packages.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.search_off_rounded, size: 48, color: Colors.grey),
-            const SizedBox(height: 12),
-            Text(
-              _searchKeyword.isNotEmpty
-                  ? 'ไม่พบแพ็กเกจที่ค้นหา "$_searchKeyword"'
-                  : 'กรุณาใส่คำค้นหา',
-              style: const TextStyle(color: Colors.grey),
-            ),
-          ],
-        ),
-      );
-    }
+      if (error != null) {
+        return Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.wifi_off_rounded, size: 48, color: Colors.grey),
+              const SizedBox(height: 12),
+              Text(error, style: const TextStyle(color: Colors.grey)),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: () {
+                  if (_searchKeyword.isNotEmpty) {
+                    controller.searchPackagesList(_searchKeyword);
+                  }
+                },
+                icon: const Icon(Icons.refresh),
+                label: const Text('ลองใหม่'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF4CAF93),
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        );
+      }
 
-    return RefreshIndicator(
-      color: const Color(0xFF4CAF93),
-      onRefresh: _loadPackages,
-      child: GridView.builder(
-        padding: const EdgeInsets.all(16),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: 168 / 221,
-        ),
-        itemCount: _packages.length,
-        itemBuilder: (context, index) {
-          final p = _packages[index];
-          return PackageCard(
-            image: p.imageUrl,
-            title: p.title,
-            location: p.location,
-            bookingStart: p.bookingStart,
-            bookingEnd: p.bookingEnd,
-            booked: p.booked,
-            capacity: p.capacity,
-            tags: p.tags,
-            priceTHB: p.priceTHB,
-            onClick: () {
-              if (p.id > 0) {
-                Get.toNamed('/packageDetail', arguments: p.id);
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('รหัสแพ็กเกจไม่ถูกต้อง')),
-                );
-              }
-            },
-          );
+      if (items.isEmpty) {
+        return Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.search_off_rounded,
+                size: 48,
+                color: Colors.grey,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                _searchKeyword.isNotEmpty
+                    ? 'ไม่พบแพ็กเกจที่ค้นหา "$_searchKeyword"'
+                    : 'กรุณาใส่คำค้นหา',
+                style: const TextStyle(color: Colors.grey),
+              ),
+            ],
+          ),
+        );
+      }
+
+      return RefreshIndicator(
+        color: const Color(0xFF4CAF93),
+        onRefresh: () async {
+          if (_searchKeyword.isNotEmpty) {
+            await controller.searchPackagesList(_searchKeyword);
+          }
         },
-      ),
-    );
+        child: GridView.builder(
+          padding: const EdgeInsets.all(16),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 168 / 221,
+          ),
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            final p = items[index];
+            return PackageCard(
+              image: p.imageUrl,
+              title: p.title,
+              location: p.location,
+              bookingStart: p.bookingStart,
+              bookingEnd: p.bookingEnd,
+              booked: p.booked,
+              capacity: p.capacity,
+              tags: p.tags,
+              priceTHB: p.priceTHB,
+              onClick: () {
+                if (p.id > 0) {
+                  Get.toNamed('/packageDetail', arguments: p.id);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('รหัสแพ็กเกจไม่ถูกต้อง')),
+                  );
+                }
+              },
+            );
+          },
+        ),
+      );
+    });
   }
 }
