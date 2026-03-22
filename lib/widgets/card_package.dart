@@ -133,8 +133,8 @@ class PackageCard extends StatelessWidget {
     return GestureDetector(
       onTap: onClick,
       child: Container(
-        width: 168,
-        height: 221,
+        width: 180,
+        height: 240,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
