@@ -351,8 +351,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           return Padding(
                             padding: const EdgeInsets.only(right: 12),
                             child: PackageCard(
-                              width: 200,
-                              height: 260,
+                              width: 190,
+                              height: 210,
                               image: image,
                               title: title,
                               location: location,
