@@ -18,6 +18,8 @@ class PackageCard extends StatelessWidget {
   final List<String> tags;
   final double priceTHB;
   final VoidCallback? onClick;
+  final double width;
+  final double height;
 
   const PackageCard({
     super.key,
@@ -33,6 +35,8 @@ class PackageCard extends StatelessWidget {
     this.tags = const [],
     this.priceTHB = 0,
     this.onClick,
+    this.width = 180,
+    this.height = 200,
   });
 
   /*
@@ -133,8 +137,8 @@ class PackageCard extends StatelessWidget {
     return GestureDetector(
       onTap: onClick,
       child: Container(
-        width: 180,
-        height: 240,
+        width: width,
+        height: height,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),

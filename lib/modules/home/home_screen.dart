@@ -137,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
               _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : SizedBox(
-                      height: 240,
+                      height: 260,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -202,6 +202,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           return Padding(
                             padding: const EdgeInsets.only(right: 12),
                             child: PackageCard(
+                              width: 190,
+                              height: 210,
                               image: image,
                               title: title,
                               location: location,
@@ -284,7 +286,7 @@ class _HomeScreenState extends State<HomeScreen> {
               _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : SizedBox(
-                      height: 240,
+                      height: 260,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -349,6 +351,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           return Padding(
                             padding: const EdgeInsets.only(right: 12),
                             child: PackageCard(
+                              width: 200,
+                              height: 260,
                               image: image,
                               title: title,
                               location: location,
